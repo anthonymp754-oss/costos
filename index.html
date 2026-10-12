@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Costos de tour · Patakay Tours</title>
+<style>
+:root{--ink:#12231f;--bg:#eef2f0;--card:#fff;--lago:#0d5c56;--cash:#ffb800;--cashsoft:#fff4d1;--line:#d5dfdb;--mute:#5d6f6a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:1.25rem;margin:4px 0 14px;color:var(--lago)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+label,.lbl{display:block;font-size:.85rem;font-weight:600;color:var(--mute);margin-bottom:5px}
+select,input[type=number]{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+select:focus,input:focus,button:focus-visible,summary:focus-visible{outline:3px solid var(--lago);outline-offset:1px}
+.sub{font-size:.85rem;color:var(--mute);margin:6px 0 0}
+.row{display:flex;gap:10px;align-items:flex-end;margin-top:12px}
+.row>div{flex:1}
+.step{display:flex;gap:6px}
+.step button{width:46px;font-size:1.3rem;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink)}
+.step input{text-align:center}
+.chk{display:flex;gap:10px;align-items:center;margin:12px 0 0;font-size:.95rem;font-weight:500;color:var(--ink)}
+.chk input{width:20px;height:20px;margin:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;padding:11px 0;font:inherit;font-weight:600;border:0;background:#fff;color:var(--ink)}
+.seg button.on{background:var(--lago);color:#fff}
+.cash{background:var(--cash);border:3px solid var(--ink);border-radius:12px;padding:14px;margin-bottom:12px;color:#1f1500}
+.cash .t{font-weight:800;letter-spacing:.02em}
+.cash .big{font-size:2.4rem;font-weight:900;line-height:1.1;margin:2px 0 8px;font-variant-numeric:tabular-nums}
+.cash ul{list-style:none;margin:0;padding:8px 0 0;border-top:2px solid rgba(31,21,0,.25)}
+.cash li{display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-variant-numeric:tabular-nums}
+.sum div{display:flex;justify-content:space-between;padding:4px 0;font-variant-numeric:tabular-nums}
+.sum .tot{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-size:1.2rem;font-weight:800}
+.sum .tot.gastar{background:var(--cash);color:#1f1500;border:3px solid var(--ink);border-radius:10px;padding:10px 12px;margin-top:8px}
+.sum .tot.ganancia{font-size:1.45rem;color:var(--lago)}
+.sum .tot.ganancia.neg{color:#b3261e}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;font-size:.78rem;color:var(--mute);padding:0 6px 6px}
+td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:top}
+td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.c{color:var(--mute)}
+tr.ef td{background:var(--cashsoft)}
+.tag{display:inline-block;margin-top:2px;padding:1px 6px;border-radius:5px;background:var(--ink);color:var(--cash);font-size:.68rem;font-weight:800}
+.copy{width:100%;padding:14px;font:inherit;font-weight:700;border:0;border-radius:10px;background:var(--lago);color:#fff;margin-bottom:12px}
+details summary{font-weight:700;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.grid label{margin:0}
+.grid input{padding:8px 10px}
+.note{font-size:.8rem;color:var(--mute);margin:10px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Costos de tour · Patakay Tours</h1>
+
+<section class="card">
+  <label for="tour">Tour</label>
+  <select id="tour"></select>
+  <p class="sub" id="info"></p>
+  <div class="row">
+    <div>
+      <span class="lbl">Número de personas</span>
+      <div class="step">
+        <button type="button" id="menos" aria-label="Menos personas">−</button>
+        <input type="number" id="n" min="1" step="1" inputmode="numeric" value="5" aria-label="Número de personas">
+        <button type="button" id="mas" aria-label="Más personas">+</button>
+      </div>
+    </div>
+    <div>
+      <span class="lbl">¿Con maestro?</span>
+      <div class="seg">
+        <button type="button" id="mSi" class="on">Sí</button>
+        <button type="button" id="mNo">No</button>
+      </div>
+    </div>
+  </div>
+  <label class="chk" id="tgL"><input type="checkbox" id="tg"> Transporte de caballo del guía (opcional)</label>
+</section>
+
+<section class="cash" aria-live="polite">
+  <div class="t">EFECTIVO A LLEVAR</div>
+  <div class="big" id="efTotal"></div>
+  <ul id="efList"></ul>
+</section>
+
+<section class="card sum">
+  <div><span>Otros costos (no efectivo)</span><b id="otros"></b></div>
+  <div class="tot gastar"><span>Total a gastar</span><span id="total"></span></div>
+</section>
+
+<section class="card sum">
+  <div><span>Precio de venta por persona</span><b id="precio"></b></div>
+  <div><span>Venta total</span><b id="venta"></b></div>
+  <div><span id="lAdel"></span><b id="adel"></b></div>
+  <div><span id="lIgv"></span><b id="igvm"></b></div>
+  <div><span id="lSaldo"></span><b id="saldo"></b></div>
+  <div><span>Total a gastar</span><b id="gasto"></b></div>
+  <div class="tot ganancia" id="ganRow"><span>GANANCIA</span><span id="ganv"></span></div>
+  <p class="note" id="aviso"></p>
+</section>
+
+<section class="card">
+  <table>
+    <thead><tr><th>Concepto</th><th>Cálculo</th><th>Monto</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</section>
+
+<button class="copy" id="copiar" type="button">Copiar resumen</button>
+
+<details class="card">
+  <summary>Editar precios, gasolina y umbrales</summary>
+  <p class="note">Los cambios son temporales (se pierden al recargar). Para cambiarlos de forma permanente, edita el objeto CONFIG al inicio del código.</p>
+  <div class="grid">
+    <label>Gasolina (S/ por galón)<input type="number" step="any" inputmode="decimal" id="cfgGas"></label>
+    <span></span>
+    <label>Guiado: tarifa 5+ desde (personas)<input type="number" step="1" inputmode="numeric" id="cfgUG"></label>
+    <label>Maestro: tarifa 4+ desde (personas)<input type="number" step="1" inputmode="numeric" id="cfgUM"></label>
+    <label>Adelanto (% del total)<input type="number" step="any" inputmode="decimal" id="cfgAd"></label>
+    <label>IGV (%)<input type="number" step="any" inputmode="decimal" id="cfgIgv"></label>
+  </div>
+  <p class="lbl" style="margin-top:16px" id="editTitulo"></p>
+  <div class="grid" id="editGrid"></div>
+</details>
+</main>
+
+<script>
+/* =====================================================
+   DATOS EDITABLES — cambia solo esta sección
+   ===================================================== */
+const CONFIG = {
+  precioGasolina: 24.8,   // S/ por galón
+  umbralGuiado: 5,        // desde cuántas personas aplica "Guiado (5 personas a más)"
+  umbralMaestro: 4,       // desde cuántas personas aplica "Maestro (4 personas a más)"
+  transporteCaballoEnEfectivo: false, // true = el transporte de caballo (guía y maestro) entra al recuadro EFECTIVO A LLEVAR
+  adelantoPorcentaje: 30, // % del total del tour que se cobra como adelanto y queda para la empresa
+  igvPorcentaje: 18,      // IGV incluido dentro de ese adelanto
+  // transCaballoGuia / transCaballoMaestro = transporte de caballo (efectivo, por grupo).
+  // El del maestro se cobra siempre que va con maestro. El del guía se cobra siempre si transGuiaObligatorio = true;
+  // si es false, aparece como casilla opcional.
+  // precioSin / precioCon = precio de venta por persona (null = ese tour no se vende así)
+  tours: [
+    { nombre: "Full Day Huraingueño", precioSin: 399, precioCon: 999, transCaballoGuia: 60, transCaballoMaestro: 60, transGuiaObligatorio: false, lagunas: "Laguna Negra y Laguna Shimbe", dias: 1,
+      galones: 3, recojo: 15, pasaje: 35, hotel: 35, comida: 20, seguro: 10, caballos: 60,
+      guiado: 70, guiado5: 100, alimGuia: 10, maestro: 70, maestro4: 150, alimMaestro: 20,
+      mesada: 250, pasajeVuelta: 35 },
+    { nombre: "Full Day Aventurero", precioSin: 399, precioCon: 999, transCaballoGuia: 40, transCaballoMaestro: 40, transGuiaObligatorio: true, lagunas: "Laguna Millonaria y Laguna Tres Amores", dias: 1,
+      galones: 3, recojo: 15, pasaje: 35, hotel: 35, comida: 20, seguro: 10, caballos: 40,
+      guiado: 70, guiado5: 100, alimGuia: 10, maestro: 70, maestro4: 150, alimMaestro: 20,
+      mesada: 250, pasajeVuelta: 35 },
+    { nombre: "Full Day Black", precioSin: 699, precioCon: 1199, transCaballoGuia: 40, transCaballoMaestro: 40, transGuiaObligatorio: true, lagunas: "Laguna Negra, Laguna Millonaria y Laguna Tres Amores", dias: 1,
+      galones: 3, recojo: 15, pasaje: 35, hotel: 35, comida: 20, seguro: 10, caballos: 70,
+      guiado: 100, guiado5: 100, alimGuia: 10, maestro: 100, maestro4: 170, alimMaestro: 20,
+      mesada: 250, pasajeVuelta: 35 },
+    { nombre: "Huaringas GOLD", precioSin: 799, precioCon: 1799, transCaballoGuia: 60, transCaballoMaestro: 60, transGuiaObligatorio: false, lagunas: "Laguna Negra, Laguna Shimbe, Laguna Millonaria y Laguna Tres Amores", dias: 2,
+      galones: 6.6, recojo: 15, pasaje: 35, hotel: 70, comida: 40, seguro: 10, caballos: 100,
+      guiado: 140, guiado5: 140, alimGuia: 20, maestro: 140, maestro4: 300, alimMaestro: 40,
+      mesada: 250, pasajeVuelta: 35 },
+    { nombre: "Lagunas del REY", precioSin: null, precioCon: 999, transCaballoGuia: 60, transCaballoMaestro: 60, transGuiaObligatorio: false, lagunas: "Laguna del Rey", dias: 1,
+      galones: 3.5, recojo: 15, pasaje: 35, hotel: 35, comida: 20, seguro: 10, caballos: 60,
+      guiado: 100, guiado5: 100, alimGuia: 20, maestro: 150, maestro4: 200, alimMaestro: 20,
+      mesada: 250, pasajeVuelta: 35 }
+  ]
+};
+/* ===================================================== */
+
+const $ = id => document.getElementById(id);
+const money = x => 'S/ ' + x.toLocaleString('es-PE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const st = {tour: 0, n: 5, maestro: true, tg: false};
+let res = null;
+
+function calcular() {
+  const t = CONFIG.tours[st.tour], n = st.n, m = st.maestro, rows = [];
+  const add = (concepto, calculo, monto, ef) => rows.push({concepto, calculo, monto, ef: !!ef});
+  const pp = (c, v, ef) => add(c, `${v} × ${n} ${n === 1 ? 'persona' : 'personas'}`, v * n, ef);
+
+  add('Gasolina', `${t.galones} gal × ${money(CONFIG.precioGasolina)}`, t.galones * CONFIG.precioGasolina);
+  if (m) { pp('Recojo', t.recojo); pp('Pasaje', t.pasaje); }
+  pp('Hotel', t.hotel);
+  pp('Comida', t.comida);
+  pp('Seguro', t.seguro);
+  pp('Caballos', t.caballos, true);
+  pp('Pasaje de vuelta', t.pasajeVuelta);
+
+  const g5 = n >= CONFIG.umbralGuiado;
+  add('Guiado', g5 ? `Tarifa ${CONFIG.umbralGuiado}+ personas` : 'Tarifa normal', g5 ? t.guiado5 : t.guiado);
+  add('Alimentación de guía', 'Por grupo', t.alimGuia);
+  if (t.transGuiaObligatorio || st.tg) add('Transporte de caballo (guía)', t.transGuiaObligatorio ? 'Obligatorio · por grupo' : 'Opcional · por grupo', t.transCaballoGuia, CONFIG.transporteCaballoEnEfectivo);
+  if (m) {
+    const m4 = n >= CONFIG.umbralMaestro;
+    add('Maestro', m4 ? `Tarifa ${CONFIG.umbralMaestro}+ personas` : 'Tarifa normal', m4 ? t.maestro4 : t.maestro, m4);
+    add('Alimentación de maestro', 'Por grupo', t.alimMaestro);
+    add('Transporte de caballo (maestro)', 'Obligatorio · por grupo', t.transCaballoMaestro, CONFIG.transporteCaballoEnEfectivo);
+    pp('Mesada', t.mesada, true);
+  }
+  const efectivo = rows.filter(r => r.ef).reduce((s, r) => s + r.monto, 0);
+  const total = rows.reduce((s, r) => s + r.monto, 0);
+  const precio = m ? t.precioCon : t.precioSin, hay = precio != null;
+  const venta = hay ? precio * n : 0;
+  const adel = venta * CONFIG.adelantoPorcentaje / 100;
+  const igv = adel - adel / (1 + CONFIG.igvPorcentaje / 100);
+  return {rows, efectivo, otros: total - efectivo, total, t, hay, precio, venta, adel, igv, saldo: venta - adel, ganancia: venta - total - igv};
+}
+
+function render() {
+  res = calcular();
+  const {rows, efectivo, otros, total, t} = res;
+  $('info').textContent = `${t.lagunas} · ${t.dias} ${t.dias === 1 ? 'día' : 'días'}`;
+  $('efTotal').textContent = money(efectivo);
+  $('efList').innerHTML = rows.filter(r => r.ef).map(r => `<li><span>${r.concepto}</span><b>${money(r.monto)}</b></li>`).join('');
+  $('otros').textContent = money(otros);
+  $('total').textContent = money(total);
+  const f = res, ap = CONFIG.adelantoPorcentaje, ig = CONFIG.igvPorcentaje, d = v => f.hay ? money(v) : '—';
+  $('lAdel').textContent = `Adelanto ${ap}% (incluye IGV)`;
+  $('lIgv').textContent = `IGV ${ig}% dentro del adelanto`;
+  $('lSaldo').textContent = `Saldo ${100 - ap}% por cobrar`;
+  $('precio').textContent = d(f.precio); $('venta').textContent = d(f.venta); $('adel').textContent = d(f.adel);
+  $('igvm').textContent = d(f.igv); $('saldo').textContent = d(f.saldo); $('gasto').textContent = money(total);
+  $('ganv').textContent = f.hay ? `${money(f.ganancia)} (${f.venta ? Math.round(f.ganancia / f.venta * 100) : 0}%)` : '—';
+  $('ganRow').classList.toggle('neg', f.hay && f.ganancia < 0);
+  $('aviso').textContent = f.hay ? 'Ganancia = venta − total a gastar − IGV del adelanto.' : `Este tour no tiene precio de venta ${st.maestro ? 'con' : 'sin'} maestro: no se calcula la ganancia.`;
+  $('tbody').innerHTML = rows.map(r => `<tr class="${r.ef ? 'ef' : ''}"><td>${r.concepto}${r.ef ? '<br><span class="tag">EFECTIVO</span>' : ''}</td><td class="c">${r.calculo}</td><td>${money(r.monto)}</td></tr>`).join('');
+}
+
+function renderEdicion() {
+  const t = CONFIG.tours[st.tour];
+  const campos = [['precioSin','Venta sin maestro (por persona)'],['precioCon','Venta con maestro (por persona)'],['galones','Galones'],['recojo','Recojo'],['pasaje','Pasaje'],['hotel','Hotel'],['comida','Comida'],['seguro','Seguro'],
+    ['caballos','Caballos (efectivo)'],['transCaballoGuia','Transp. caballo guía'],['transCaballoMaestro','Transp. caballo maestro'],['guiado','Guiado normal'],['guiado5','Guiado tarifa 5+'],['alimGuia','Alimentación de guía'],
+    ['maestro','Maestro normal'],['maestro4','Maestro tarifa 4+ (efectivo)'],['alimMaestro','Alimentación de maestro'],
+    ['mesada','Mesada (efectivo)'],['pasajeVuelta','Pasaje de vuelta']];
+  $('editTitulo').textContent = 'Precios de: ' + t.nombre;
+  $('editGrid').innerHTML = campos.map(([k, l]) => `<label>${l}<input type="number" step="any" inputmode="decimal" data-k="${k}" value="${t[k] ?? ''}"></label>`).join('');
+}
+
+function setN(v) { st.n = Math.max(1, Math.floor(Number(v)) || 1); $('n').value = st.n; render(); }
+
+CONFIG.tours.forEach((t, i) => $('tour').add(new Option(t.nombre, i)));
+function syncOpts() { $('tgL').style.display = CONFIG.tours[st.tour].transGuiaObligatorio ? 'none' : ''; }
+$('tour').onchange = e => { st.tour = +e.target.value; syncOpts(); renderEdicion(); render(); };
+$('n').oninput = e => { const v = Math.floor(Number(e.target.value)); if (v >= 1) { st.n = v; render(); } };
+$('n').onchange = e => setN(e.target.value);
+$('menos').onclick = () => setN(st.n - 1);
+$('mas').onclick = () => setN(st.n + 1);
+function setM(v) { st.maestro = v; $('mSi').classList.toggle('on', v); $('mNo').classList.toggle('on', !v); render(); }
+$('mSi').onclick = () => setM(true);
+$('mNo').onclick = () => setM(false);
+
+$('cfgGas').value = CONFIG.precioGasolina;
+$('cfgUG').value = CONFIG.umbralGuiado;
+$('cfgUM').value = CONFIG.umbralMaestro;
+$('cfgAd').value = CONFIG.adelantoPorcentaje;
+$('cfgIgv').value = CONFIG.igvPorcentaje;
+$('cfgAd').oninput = e => { CONFIG.adelantoPorcentaje = parseFloat(e.target.value) || 0; render(); };
+$('cfgIgv').oninput = e => { CONFIG.igvPorcentaje = parseFloat(e.target.value) || 0; render(); };
+$('cfgGas').oninput = e => { CONFIG.precioGasolina = parseFloat(e.target.value) || 0; render(); };
+$('cfgUG').oninput = e => { CONFIG.umbralGuiado = parseInt(e.target.value) || 1; render(); };
+$('cfgUM').oninput = e => { CONFIG.umbralMaestro = parseInt(e.target.value) || 1; render(); };
+$('editGrid').oninput = e => {
+  const k = e.target.dataset.k;
+  if (k) { const v = parseFloat(e.target.value); CONFIG.tours[st.tour][k] = (k.startsWith('precio') && isNaN(v)) ? null : (v || 0); render(); }
+};
+
+$('copiar').onclick = async () => {
+  const {rows, efectivo, otros, total, t} = res;
+  const txt = [
+    `*Costos del tour: ${t.nombre}*`,
+    `${t.lagunas} · ${t.dias} ${t.dias === 1 ? 'día' : 'días'} · ${st.n} ${st.n === 1 ? 'persona' : 'personas'} · ${st.maestro ? 'Con maestro' : 'Sin maestro'}`,
+    '',
+    `*EFECTIVO A LLEVAR: ${money(efectivo)}*`,
+    ...rows.filter(r => r.ef).map(r => `- ${r.concepto}: ${money(r.monto)}`),
+    '',
+    `Otros costos: ${money(otros)}`,
+    `*TOTAL A GASTAR: ${money(total)}*`,
+    ...(res.hay ? ['', `Venta: ${money(res.venta)} (${money(res.precio)} × ${st.n})`, `Adelanto ${CONFIG.adelantoPorcentaje}% (incluye IGV): ${money(res.adel)}`, `Saldo por cobrar: ${money(res.saldo)}`, `*GANANCIA: ${money(res.ganancia)}*`] : [])
+  ].join('\n');
+  let ok = false;
+  try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) {}
+  if (!ok) {
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+  }
+  const b = $('copiar');
+  b.textContent = ok ? '¡Resumen copiado!' : 'No se pudo copiar';
+  setTimeout(() => b.textContent = 'Copiar resumen', 1800);
+};
+
+$('tg').onchange = e => { st.tg = e.target.checked; render(); };
+syncOpts();
+renderEdicion();
+render();
+</script>
+</body>
+</html>
